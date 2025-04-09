@@ -44,9 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.first.hitmspins.R
+import com.first.hitmspins.music.MusicPlayer
 
 @Composable
-fun MusicSelectionScreen(onBack: () -> Unit, onTrackSelected: (String, String) -> Unit, navController: NavController) {
+fun MusicSelectionScreen(onBack: () -> Unit,
+                         onTrackSelected: (String, String) -> Unit,
+                         navController: NavController) {
+    MusicPlayer.setSoundEnabled(true)
     val tracks = listOf(
         Triple("Electro Rush", R.drawable.img_8, "Easy"),
         Triple("Rock Inferno", R.drawable.img_9, "Medium"),
@@ -145,7 +149,9 @@ fun MusicSelectionScreen(onBack: () -> Unit, onTrackSelected: (String, String) -
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(
-                                onClick = { navController.navigate("gameplay/{title}/{difficulty}") },
+                                onClick = {
+                                    navController.navigate("gameplay/$title/$difficulty")
+                                },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4081)),
                                 modifier = Modifier.weight(1f)
                             ) {

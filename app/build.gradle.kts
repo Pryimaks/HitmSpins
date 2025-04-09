@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -40,6 +41,22 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.placeholder.material)
+
+    implementation (libs.shreyaspatil.capturable)
+
+    implementation (libs.androidx.core)
+
+    implementation (libs.androidx.datastore.preferences)
+
+    implementation (libs.androidx.room.runtime)
+    kapt (libs.androidx.room.compiler)
+    implementation (libs.androidx.room.ktx)
+
+    implementation (libs.androidx.material)
+
     implementation(libs.coil.compose)
     implementation (libs.androidx.navigation.compose)
 

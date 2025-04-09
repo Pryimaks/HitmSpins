@@ -24,6 +24,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,15 +38,50 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.first.hitmspins.R
+import com.first.hitmspins.music.MusicPlayer
+import com.first.hitmspins.viewmodel.GameViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun MainMenuScreen(navController: NavController) {
+    var isPlaying by remember { mutableStateOf(true) }
+    val songResId = R.raw.daddycool
+    val context = LocalContext.current
+    val isSoundEnabled by SettingsManager(context).
+    soundEnabledFlow.collectAsState(initial = true)
+
+    LaunchedEffect(songResId) {
+        MusicPlayer.initializef(context, songResId)
+        MusicPlayer.setSoundEnabledf(isSoundEnabled)
+        if (isPlaying) MusicPlayer.play()
+    }
+
+    LaunchedEffect(isSoundEnabled) {
+        MusicPlayer.setSoundEnabledf(isSoundEnabled)
+        if (!isSoundEnabled) {
+            MusicPlayer.pause()
+        } else if (isPlaying) {
+            MusicPlayer.play()
+        }
+    }
+
+    var progress by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            progress = MusicPlayer.getCurrentPosition().toFloat() /
+                    MusicPlayer.getDuration().coerceAtLeast(1)
+            delay(100)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -49,6 +91,7 @@ fun MainMenuScreen(navController: NavController) {
                 )
             )
     ) {
+        var isPremiumOverlayVisible by remember { mutableStateOf(false) }
         Image(
             painter = painterResource(id = R.drawable.img_5),
             contentDescription = "Background",
@@ -70,16 +113,8 @@ fun MainMenuScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(
-                onClick = { /* Go Premium */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A0DAD)),
-                shape = RoundedCornerShape(25.dp)
-            ) {
-                Text("Go premium 💎", color = Color.White, fontSize = 18.sp)
-            }
+            GoPremiumButton(onClick = { isPremiumOverlayVisible = true })
+
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -114,6 +149,11 @@ fun MainMenuScreen(navController: NavController) {
                 Text("Start Game", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
         }
+
+        if (isPremiumOverlayVisible) {
+            PremiumOverlay(onDismiss = { isPremiumOverlayVisible = false })
+        }
+
     }
 }
 
