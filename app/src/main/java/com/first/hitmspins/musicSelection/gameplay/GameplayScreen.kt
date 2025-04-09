@@ -70,7 +70,7 @@ fun GameplayScreen(
     soundEnabledFlow.collectAsState(initial = true)
 
     var score by remember { mutableStateOf(0) }
-    var combo by remember { mutableStateOf(10) }
+    var combo by remember { mutableStateOf(2) }
     var progress by remember { mutableStateOf(0f) }
 
     val backStackEntry = navController.currentBackStackEntry

@@ -19,12 +19,15 @@ object MusicPlayer {
         isSoundEnabled = enabled
         mediaPlayer?.setVolume(if (enabled) 1f else 0f, if (enabled) 1f else 0f)
     }
-
+    private var currentResId: Int = -1
     fun initialize(context: Context, resId: Int) {
+        if (currentResId == resId && mediaPlayer != null) return
+
         mediaPlayer?.release()
+        currentResId = resId
         mediaPlayer = MediaPlayer.create(context, resId).apply {
-            setVolume(if (isSoundEnabled) 1f else 0f, if (isSoundEnabled) 1f else 0f)
-            isLooping = false
+            isLooping = true
+            if (isSoundEnabled) start()
         }
     }
 
@@ -58,5 +61,21 @@ object MusicPlayer {
     fun release() {
         mediaPlayer?.release()
         mediaPlayer = null
+    }
+    private var isMusicEnabled = true
+
+    fun setMusicEnabled(enabled: Boolean) {
+        isMusicEnabled = enabled
+        if (enabled) {
+            mediaPlayer?.start()
+        } else {
+            mediaPlayer?.pause()
+        }
+    }
+
+    fun playGameSoundIfEnabled(soundId: Int) {
+        if (isSoundEnabled) {
+            // грай звук
+        }
     }
 }

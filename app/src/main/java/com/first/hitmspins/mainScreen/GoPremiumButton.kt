@@ -3,8 +3,11 @@ package com.first.hitmspins.mainScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,10 +58,38 @@ fun GoPremiumButton(onClick: () -> Unit) {
             .fillMaxWidth()
             .height(50.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A0DAD)),
-        shape = RoundedCornerShape(25.dp)
+        shape = RoundedCornerShape(25.dp),
+        contentPadding = PaddingValues(0.dp)
     ) {
-        Text("Go premium 💎", color = Color.White, fontSize = 18.sp)
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.offset(x = (-10).dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.img_18),
+                    contentDescription = "Premium badge",
+                    modifier = Modifier
+                        .size(120.dp),
+                    contentScale = ContentScale.Fit
+                )
+             Spacer(modifier = Modifier.width(9.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.img_17),
+                    contentDescription = "Diamond icon",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .offset(y = (-4).dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
     }
+
 
 }
 
@@ -72,7 +105,7 @@ fun PremiumOverlay(onDismiss: () -> Unit) {
         Box(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
-                .background(Color.Magenta, shape = RoundedCornerShape(20.dp))
+                .background(Color(0xFFDAAFFF), shape = RoundedCornerShape(20.dp))
                 .padding(24.dp)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -82,8 +115,8 @@ fun PremiumOverlay(onDismiss: () -> Unit) {
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .clickable { onDismiss() }
-                        .size(24.dp)
-                        .offset(x = 8.dp, y = (-8).dp),
+                        .size(34.dp)
+                        .background(Color(0xFFAAAAAA), shape = RoundedCornerShape(88.dp)),
                     tint = Color.Gray
                 )
 
@@ -107,8 +140,8 @@ fun PremiumOverlay(onDismiss: () -> Unit) {
                         modifier = Modifier
                             .padding(top = 12.dp)
                             .clip(RoundedCornerShape(25.dp))
-                            .background(Color(0xFFFFC107))
-                            .padding(horizontal = 20.dp, vertical = 12.dp)
+                            .background(Color(0xFFF4B400))
+                            .padding(horizontal = 20.dp, vertical = 15.dp)
                             .fillMaxWidth()
                             .wrapContentWidth(Alignment.CenterHorizontally)
 
@@ -116,7 +149,8 @@ fun PremiumOverlay(onDismiss: () -> Unit) {
                         Text(
                             text = "$3.99 One-Time Purchase",
                             color = Color.Black,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
                         )
                     }
 
@@ -125,13 +159,15 @@ fun PremiumOverlay(onDismiss: () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 16.dp)
-                            .height(50.dp),
+                            .height(60.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFF4081)
+                            containerColor = Color(0xFFDF1D73)
                         ),
                         shape = RoundedCornerShape(25.dp)
                     ) {
-                        Text("Upgrade to Premium", color = Color.White)
+                        Text("Upgrade to Premium",
+                            color = Color.White,
+                            fontSize = 20.sp)
                     }
                 }
             }
@@ -146,15 +182,16 @@ fun PremiumFeatureButton(text: String) {
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .clip(RoundedCornerShape(25.dp))
-            .background(Color(0xFF6200EA))
-            .padding(vertical = 12.dp),
+            .background(Color(0xFF6B00C6))
+            .padding(vertical = 17.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             color = Color.White,
             fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp
         )
     }
 }

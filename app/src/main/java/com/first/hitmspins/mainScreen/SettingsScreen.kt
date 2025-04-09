@@ -51,6 +51,7 @@ import androidx.navigation.NavController
 import com.first.hitmspins.R
 import com.first.hitmspins.music.MusicPlayer
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -60,7 +61,11 @@ val Context.dataStore by preferencesDataStore(name = "settings")
 class SettingsManager(private val context: Context) {
     companion object {
         private val SOUND_ENABLED = booleanPreferencesKey("sound_enabled")
+        private val MUSIC_ENABLED = booleanPreferencesKey("music_enabled")
     }
+
+    val musicEnabledFlow: Flow<Boolean> = context.dataStore.data
+        .map { preferences -> preferences[MUSIC_ENABLED] ?: true }
 
     val soundEnabledFlow: Flow<Boolean> = context.dataStore.data
         .map { preferences -> preferences[SOUND_ENABLED] ?: true }
@@ -72,27 +77,27 @@ class SettingsManager(private val context: Context) {
         MusicPlayer.setSoundEnabled(enabled)
     }
 
-    suspend fun setSoundEnabledf(enabled: Boolean) {
+    suspend fun setMusicEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[SOUND_ENABLED] = enabled
+            preferences[MUSIC_ENABLED] = enabled
         }
-        MusicPlayer.setSoundEnabled(enabled)
+        MusicPlayer.setMusicEnabled(enabled)
     }
-
 }
+
 
 @Composable
 fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val settingsManager = remember { SettingsManager(context) }
-    val settingsManagerf = remember { SettingsManager(context) }
+
+    // Use DataStore for music enabled state
+    val isMusicEnabled by settingsManager.musicEnabledFlow.collectAsState(initial = true)
+
+    // For sound enabled, either use DataStore consistently or SharedPreferences
+    // Here's the version using DataStore:
     val isSoundEnabled by settingsManager.soundEnabledFlow.collectAsState(initial = true)
-    val isSoundEnabledf by settingsManager.soundEnabledFlow.collectAsState(initial = true)
-    DisposableEffect(Unit) {
-        onDispose {
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -118,40 +123,37 @@ fun SettingsScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Switch(
+        // Game Sound setting
+        SettingItem(
+            title = "🎮 Game Sound",
             checked = isSoundEnabled,
             onCheckedChange = { enabled ->
-                scope.launch {
-                    settingsManager.setSoundEnabled(enabled)
-                }
+                scope.launch { settingsManager.setSoundEnabled(enabled) }
             }
         )
 
-        Text(if (isSoundEnabled) "Sound: ON" else "Sound: OFF")
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Switch(
-            checked = isSoundEnabledf,
-            onCheckedChange = { enableds ->
-                scope.launch {
-                    settingsManagerf.setSoundEnabledf(enableds)
-                }
+        // Background Music setting
+        SettingItem(
+            title = "🎵 Background Music",
+            checked = isMusicEnabled,
+            onCheckedChange = { enabled ->
+                scope.launch { settingsManager.setMusicEnabled(enabled) }
             }
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = if (isSoundEnabled) "🎵 Music is ON" else "🔇 Music is OFF",
+            text = if (isMusicEnabled) "🎵 Music is ON" else "🔇 Music is OFF",
             color = Color.White,
             fontSize = 16.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-
     }
-
-
-
 }
+
 
 @Composable
 fun SettingItem(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {

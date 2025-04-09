@@ -17,9 +17,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
@@ -56,6 +59,7 @@ import java.io.FileOutputStream
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import com.first.hitmspins.R
 
 
@@ -71,10 +75,7 @@ fun GameOverScreen(
     val context = LocalContext.current
     val captureController = rememberCaptureController()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
 
         Image(
             painter = painterResource(id = R.drawable.img_5),
@@ -86,14 +87,30 @@ fun GameOverScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.navigate("mainMenu") }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
+            }
 
             Text(
-                text = "Game Over",
+                text = "User",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.White
+                color = Color.White,
+                fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -101,7 +118,7 @@ fun GameOverScreen(
             Row {
                 repeat(6) {
                     Icon(
-                        Icons.Default.Star,
+                        imageVector = Icons.Default.Star,
                         contentDescription = null,
                         tint = Color.Yellow,
                         modifier = Modifier.size(28.dp)
@@ -114,10 +131,7 @@ fun GameOverScreen(
             Capturable(
                 controller = captureController,
                 onCaptured = { imageBitmap, _ ->
-                    val bitmap = imageBitmap?.asAndroidBitmap()
-                    bitmap?.let {
-                        shareBitmap(context, it)
-                    }
+                    imageBitmap?.asAndroidBitmap()?.let { shareBitmap(context, it) }
                 }
             ) {
                 Box(
@@ -125,20 +139,36 @@ fun GameOverScreen(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0xFF9C27B0))
-                        .padding(16.dp)
+                        .padding(vertical = 16.dp, horizontal = 24.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("🏆 Score: $score", color = Color.White, fontSize = 16.sp)
-                        Text("🔥 Max Combo: x$combo", color = Color.White, fontSize = 16.sp)
-                        Text("🎯 Difficulty: $difficulty", color = Color.White, fontSize = 16.sp)
+                    Column(horizontalAlignment = Alignment.Start) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("🏆", fontSize = 18.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Score: $score", color = Color.White, fontSize = 16.sp)
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("🔥", fontSize = 18.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Max Combo: x$combo", color = Color.White, fontSize = 16.sp)
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("🎯", fontSize = 18.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Accuracy: ~72%", color = Color.White, fontSize = 16.sp)
+                        }
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(32.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 IconButton(
                     onClick = {
                         navController.navigate("gameplay/$title/$difficulty") {
@@ -167,7 +197,7 @@ fun GameOverScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
@@ -184,15 +214,10 @@ fun GameOverScreen(
             ) {
                 Text("Next Track", fontSize = 18.sp, color = Color.White)
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            TextButton(onClick = { navController.navigate("mainMenu") }) {
-                Text("Back to Home", color = Color.LightGray)
-            }
         }
     }
 }
+
 
 fun shareBitmap(context: Context, bitmap: Bitmap) {
     val filename = "score_${System.currentTimeMillis()}.png"

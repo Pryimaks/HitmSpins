@@ -75,7 +75,7 @@ fun MusicSelectionScreen(onBack: () -> Unit,
                 onClick = onBack,
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFFF4081), shape = RoundedCornerShape(8.dp))
+                    .background(Color(0xFFDF1D73), shape = RoundedCornerShape(8.dp))
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
@@ -102,7 +102,7 @@ fun MusicSelectionScreen(onBack: () -> Unit,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
-                    .border(2.dp, Color(0xFFFF4081), RoundedCornerShape(12.dp)),
+                    .border(2.dp, Color(0xFFDF1D73), RoundedCornerShape(12.dp)),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A2E))
             ) {
@@ -114,7 +114,7 @@ fun MusicSelectionScreen(onBack: () -> Unit,
                         painter = painterResource(id = image),
                         contentDescription = title,
                         modifier = Modifier
-                            .size(100.dp)
+                            .size(120.dp)
                             .clip(RoundedCornerShape(10.dp))
                     )
 
@@ -137,10 +137,10 @@ fun MusicSelectionScreen(onBack: () -> Unit,
                         Spacer(modifier = Modifier.height(12.dp))
 
                         val difficultyColor = when (difficulty) {
-                            "Easy" -> Color(0xFF4CAF50)
-                            "Medium" -> Color(0xFF2196F3)
-                            "Hard" -> Color(0xFFF44336)
-                            "Insane" -> Color(0xFFE040FB)
+                            "Easy" -> Color(0xFF008C09)
+                            "Medium" -> Color(0xFF0041CC)
+                            "Hard" -> Color(0xFFA70024)
+                            "Insane" -> Color(0xFF131313)
                             else -> Color.Gray
                         }
 
@@ -152,8 +152,9 @@ fun MusicSelectionScreen(onBack: () -> Unit,
                                 onClick = {
                                     navController.navigate("gameplay/$title/$difficulty")
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4081)),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDF1D73)),
                                 modifier = Modifier.weight(1f)
+                                    .background(Color(0xFFDF1D73), RoundedCornerShape(19.dp))
                             ) {
                                 Text("Play Now", color = Color.White)
                             }
@@ -163,7 +164,8 @@ fun MusicSelectionScreen(onBack: () -> Unit,
                             Button(
                                 onClick = {  },
                                 colors = ButtonDefaults.buttonColors(containerColor = difficultyColor),
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.weight(1f)
+                                    .background(difficultyColor, RoundedCornerShape(15.dp)),
                                 contentPadding = PaddingValues(0.dp)
                             ) {
                                 Text(difficulty, color = Color.White)

@@ -73,7 +73,6 @@ fun TrackLinesBackground(modifier: Modifier = Modifier) {
             val bottomLeft = i * bottomWidth
             val bottomRight = bottomLeft + bottomWidth
 
-            // Фон треку
             val path = Path().apply {
                 moveTo(topLeft, 0f)
                 lineTo(topRight, 0f)
@@ -96,12 +95,11 @@ fun TrackLinesBackground(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun TrackArea(isPlaying: Boolean, difficulty: String,
-              onNoteHit: (String) -> Unit) {
-    val noteTypes = listOf("tap", "hold", "swipe", "tap")
-    val noteOffsets = remember {
-        noteTypes.map { Animatable(-100f) }
-    }
+fun TrackArea(
+    isPlaying: Boolean,
+    difficulty: String,
+    onNoteHit: (String) -> Unit
+) {
     val laneCount = 4
     val lanesNotes = remember { List(laneCount) { mutableStateListOf<Note>() } }
 
@@ -122,7 +120,6 @@ fun TrackArea(isPlaying: Boolean, difficulty: String,
                 TrackLane(isPlaying, index, lanesNotes[index], difficulty)
             }
         }
-
         Box(
             modifier = Modifier
                 .fillMaxSize(),
@@ -133,13 +130,12 @@ fun TrackArea(isPlaying: Boolean, difficulty: String,
                 val hitNote = notes.find { it.offset.value in 400f..470f }
                 if (hitNote != null) {
                     onNoteHit(hitNote.type)
-                   notes.remove(hitNote)
+
+                    notes.remove(hitNote)
                 }
             }
-
         }
     }
-
 }
 
 

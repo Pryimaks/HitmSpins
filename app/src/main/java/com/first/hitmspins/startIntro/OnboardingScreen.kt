@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -63,19 +65,18 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 .fillMaxSize()
                 .background(Color(0xFF0D0D1A))
         ) {
-            TextButton(
+            IconButton(
                 onClick = onFinish,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(16.dp)
                     .zIndex(1f)
-            )
-            {
-                Text(
-                    text = "Skip",
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.img_13),
+                    contentDescription = "Skip",
+                    modifier = Modifier.size(48.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
 
@@ -131,7 +132,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                     .height(50.dp)
 
                 val buttonColors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF4081),
+                    containerColor = Color(0xFFFF0989),
                     contentColor = Color.White
                 )
 
@@ -145,7 +146,12 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                         modifier = buttonModifier,
                         colors = buttonColors
                     ) {
-                        Text("Next")
+                        Image(
+                            painter = painterResource(id = R.drawable.img_14),
+                            contentDescription = "Next",
+                            modifier = Modifier.size(48.dp),
+                            contentScale = ContentScale.Fit
+                        )
                     }
                 } else {
                     Button(
@@ -153,7 +159,12 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                         modifier = buttonModifier,
                         colors = buttonColors
                     ) {
-                        Text("Start Playing")
+                        Image(
+                            painter = painterResource(id = R.drawable.img_15),
+                            contentDescription = "Start Playing",
+                            modifier = Modifier.size(128.dp),
+                            contentScale = ContentScale.Fit
+                        )
                     }
                 }
             }
