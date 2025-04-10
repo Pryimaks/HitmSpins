@@ -103,7 +103,9 @@ fun TrackArea(
     val laneCount = 4
     val lanesNotes = remember { List(laneCount) { mutableStateListOf<Note>() } }
     val activeHolds = remember { mutableStateListOf<Int>() }
-
+    var score by remember { mutableStateOf(0) }
+    var combo by remember { mutableStateOf(0) }
+    var streak by remember { mutableStateOf(0) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -147,6 +149,7 @@ fun TrackArea(
                                 onNoteHit(note.type)
                                 notes.remove(note)
                             }
+
                         }
                     }
                 },
@@ -163,13 +166,13 @@ fun TrackArea(
                         onNoteHit(holdNote.type)
                         notes.remove(holdNote)
                     }
+
                 }
             )
-
-
         }
     }
 }
+
 
 
 

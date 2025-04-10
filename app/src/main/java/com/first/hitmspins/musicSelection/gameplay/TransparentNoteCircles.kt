@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -41,7 +42,6 @@ fun TransparentNoteCircles(
 ) {
     val backgroundColor = Color(0xFF6B00C6).copy(alpha = 0.35f)
     val circleColor = Color(0xFFEE900188)
-    val interactionSource = remember { MutableInteractionSource() }
 
     Box(
         modifier = Modifier
@@ -74,36 +74,40 @@ fun TransparentNoteCircles(
             repeat(noteCount) { index ->
                 var offsetX by remember { mutableStateOf(0f) }
                 var isPressed by remember { mutableStateOf(false) }
-                val interactionSource = remember { MutableInteractionSource() }
 
-                val gestureModifier = Modifier
-                    .pointerInput(Unit) {
-                        detectHorizontalDragGestures(
-                            onDragEnd = {
-                                val direction = when {
-                                    offsetX > 100f -> SwipeDirection.RIGHT
-                                    offsetX < -100f -> SwipeDirection.LEFT
-                                    else -> null
-                                }
-                                direction?.let { onCircleSwipe(index, it) }
-                                offsetX = 0f
-                            },
-                            onHorizontalDrag = { _, dragAmount ->
-                                offsetX += dragAmount
+                val gestureModifier = Modifier.pointerInput(Unit) {
+                    detectHorizontalDragGestures(
+                        onDragEnd = {
+                            val direction = when {
+                                offsetX > 100f -> SwipeDirection.RIGHT
+                                offsetX < -100f -> SwipeDirection.LEFT
+                                else -> null
                             }
-                        )
-                    }
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onPress = {
-                                isPressed = true
-                                onCircleHoldStart(index)
-                                tryAwaitRelease()
-                                onCircleHoldEnd(index)
-                                isPressed = false
+                            direction?.let { onCircleSwipe(index, it) }
+                            offsetX = 0f
+                        },
+                        onHorizontalDrag = { _, dragAmount ->
+                            offsetX += dragAmount
+                        }
+                    )
+                }
+
+                val tapHoldModifier = Modifier.pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            onCircleHoldStart(index)
+
+                            val released = tryAwaitRelease()
+                            isPressed = false
+                            onCircleHoldEnd(index)
+
+                            if (released) {
+                                onCircleTap(index)
                             }
-                        )
-                    }
+                        }
+                    )
+                }
 
                 Box(
                     modifier = Modifier
@@ -116,53 +120,33 @@ fun TransparentNoteCircles(
                         modifier = Modifier
                             .fillMaxSize()
                             .then(gestureModifier)
+                            .then(tapHoldModifier)
                             .clip(CircleShape)
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null
-                            ) {
-                                onCircleTap(index)
-                            }
-                    ) {
-                        if (isPressed) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .graphicsLayer {
-                                        shape = CircleShape
-                                        clip = true
-                                        shadowElevation = 10f
-                                    }
-                                    .background(
-                                        brush = Brush.radialGradient(
-                                            colors = listOf(
-                                                circleColor.copy(alpha = 0.2f),
-                                                Color.Transparent
-                                            ),
-                                            radius = 400f
-                                        ),
-                                        shape = CircleShape
-                                    )
+                            .background(
+                                if (isPressed) circleColor.copy(alpha = 0.5f)
+                                else Color.Transparent
                             )
-                        }
-
+                            .shadow(8.dp, CircleShape)
+                    ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .border(
-                                    width = 6.dp,
-                                    color = circleColor,
-                                    shape = CircleShape
-                                )
+                                .border(6.dp, circleColor, CircleShape)
                                 .background(Color.Transparent)
                         )
                     }
                 }
             }
-
         }
     }
 }
+
+
+
+
+
+
+
 
 
 

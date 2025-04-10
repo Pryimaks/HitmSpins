@@ -228,23 +228,23 @@ fun GameplayScreen(
                 TrackArea(isPlaying, difficulty) { noteType ->
                     when (noteType) {
                         "tap" -> {
-                            score += 100
+                            score += 10
                             combo += 1
                         }
                         "hold" -> {
-                            score += 150
+                            score += 50
                             combo += 1
                         }
                         "swipe" -> {
-                            score += 120
+                            score += 25
                             combo += 1
                         }
                         "bonus_combo" -> {
-                            combo *= 10
-                            score += 500
+                            combo *= 2
+                            score += 100
                         }
                         "bonus_score" -> {
-                            score += 1250
+                            score += 250
                             combo += 5
                         }
                     }
