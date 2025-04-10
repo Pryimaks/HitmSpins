@@ -92,11 +92,8 @@ fun SettingsScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     val settingsManager = remember { SettingsManager(context) }
 
-    // Use DataStore for music enabled state
     val isMusicEnabled by settingsManager.musicEnabledFlow.collectAsState(initial = true)
 
-    // For sound enabled, either use DataStore consistently or SharedPreferences
-    // Here's the version using DataStore:
     val isSoundEnabled by settingsManager.soundEnabledFlow.collectAsState(initial = true)
 
     Column(
@@ -123,7 +120,6 @@ fun SettingsScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Game Sound setting
         SettingItem(
             title = "🎮 Game Sound",
             checked = isSoundEnabled,
@@ -134,7 +130,6 @@ fun SettingsScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Background Music setting
         SettingItem(
             title = "🎵 Background Music",
             checked = isMusicEnabled,

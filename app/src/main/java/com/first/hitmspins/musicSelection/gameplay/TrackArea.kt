@@ -102,6 +102,7 @@ fun TrackArea(
 ) {
     val laneCount = 4
     val lanesNotes = remember { List(laneCount) { mutableStateListOf<Note>() } }
+    val activeHolds = remember { mutableStateListOf<Int>() }
 
     Box(
         modifier = Modifier
@@ -125,15 +126,47 @@ fun TrackArea(
                 .fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            TransparentNoteCircles(noteCount = laneCount) { tappedIndex ->
-                val notes = lanesNotes[tappedIndex]
-                val hitNote = notes.find { it.offset.value in 400f..470f }
-                if (hitNote != null) {
-                    onNoteHit(hitNote.type)
+            TransparentNoteCircles(
+                noteCount = laneCount,
+                onCircleSwipe = { tappedIndex, direction ->
+                    val notes = lanesNotes[tappedIndex]
+                    val hitNote = notes.find { it.offset.value in 400f..470f && it.type == "swipe" }
 
-                    notes.remove(hitNote)
+                    if (hitNote != null && hitNote.swipeDirection == direction) {
+                        onNoteHit(hitNote.type)
+                        notes.remove(hitNote)
+                    }
+                },
+                onCircleTap = { tappedIndex ->
+                    val notes = lanesNotes[tappedIndex]
+                    val hitNote = notes.find { it.offset.value in 400f..470f }
+
+                    hitNote?.let { note ->
+                        when (note.type) {
+                            "tap", "bonus_combo", "bonus_score" -> {
+                                onNoteHit(note.type)
+                                notes.remove(note)
+                            }
+                        }
+                    }
+                },
+                onCircleHoldStart = { index ->
+                    activeHolds.add(index)
+                },
+                onCircleHoldEnd = { index ->
+                    activeHolds.remove(index)
+
+                    val notes = lanesNotes[index]
+                    val holdNote = notes.find { it.offset.value in 400f..470f && it.type == "hold" }
+
+                    if (holdNote != null) {
+                        onNoteHit(holdNote.type)
+                        notes.remove(holdNote)
+                    }
                 }
-            }
+            )
+
+
         }
     }
 }

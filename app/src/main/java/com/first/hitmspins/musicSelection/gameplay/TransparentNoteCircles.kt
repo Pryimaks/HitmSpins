@@ -1,10 +1,11 @@
 package com.first.hitmspins.musicSelection.gameplay
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,37 +15,40 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RenderEffect
-import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TransparentNoteCircles(noteCount: Int = 4, onCircleTap: (Int) -> Unit) {
-    val backgroundColor = Color(0xFF6B00C6).copy(alpha = 0.4f)
+fun TransparentNoteCircles(
+    noteCount: Int = 4,
+    onCircleSwipe: (index: Int, direction: SwipeDirection) -> Unit,
+    onCircleTap: (Int) -> Unit,
+    onCircleHoldStart: (Int) -> Unit,
+    onCircleHoldEnd: (Int) -> Unit
+) {
+    val backgroundColor = Color(0xFF6B00C6).copy(alpha = 0.35f)
     val circleColor = Color(0xFFEE900188)
+    val interactionSource = remember { MutableInteractionSource() }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(1f / 4f)
     ) {
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,8 +72,38 @@ fun TransparentNoteCircles(noteCount: Int = 4, onCircleTap: (Int) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             repeat(noteCount) { index ->
-
+                var offsetX by remember { mutableStateOf(0f) }
+                var isPressed by remember { mutableStateOf(false) }
                 val interactionSource = remember { MutableInteractionSource() }
+
+                val gestureModifier = Modifier
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures(
+                            onDragEnd = {
+                                val direction = when {
+                                    offsetX > 100f -> SwipeDirection.RIGHT
+                                    offsetX < -100f -> SwipeDirection.LEFT
+                                    else -> null
+                                }
+                                direction?.let { onCircleSwipe(index, it) }
+                                offsetX = 0f
+                            },
+                            onHorizontalDrag = { _, dragAmount ->
+                                offsetX += dragAmount
+                            }
+                        )
+                    }
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                isPressed = true
+                                onCircleHoldStart(index)
+                                tryAwaitRelease()
+                                onCircleHoldEnd(index)
+                                isPressed = false
+                            }
+                        )
+                    }
 
                 Box(
                     modifier = Modifier
@@ -81,33 +115,36 @@ fun TransparentNoteCircles(noteCount: Int = 4, onCircleTap: (Int) -> Unit) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
+                            .then(gestureModifier)
                             .clip(CircleShape)
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = LocalIndication.current
+                                indication = null
                             ) {
                                 onCircleTap(index)
                             }
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .graphicsLayer {
-                                    shape = CircleShape
-                                    clip = true
-                                    shadowElevation = 10f
-                                }
-                                .background(
-                                    brush = Brush.radialGradient(
-                                        colors = listOf(
-                                            circleColor.copy(alpha = 0f),
-                                            Color.Transparent
+                        if (isPressed) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .graphicsLayer {
+                                        shape = CircleShape
+                                        clip = true
+                                        shadowElevation = 10f
+                                    }
+                                    .background(
+                                        brush = Brush.radialGradient(
+                                            colors = listOf(
+                                                circleColor.copy(alpha = 0.2f),
+                                                Color.Transparent
+                                            ),
+                                            radius = 400f
                                         ),
-                                        radius = 400f
-                                    ),
-                                    shape = CircleShape
-                                )
-                        )
+                                        shape = CircleShape
+                                    )
+                            )
+                        }
 
                         Box(
                             modifier = Modifier
@@ -122,6 +159,7 @@ fun TransparentNoteCircles(noteCount: Int = 4, onCircleTap: (Int) -> Unit) {
                     }
                 }
             }
+
         }
     }
 }

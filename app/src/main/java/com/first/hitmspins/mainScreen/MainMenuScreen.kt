@@ -189,7 +189,7 @@ fun MainMenuScreen(navController: NavController) {
                     ) {
                         Box(
                             modifier = Modifier
-                                .width(359.dp)
+                                .width(330.dp)
                                 .height(3.dp)
                                 .background(
                                     color = Color(0xFFFF4081),
